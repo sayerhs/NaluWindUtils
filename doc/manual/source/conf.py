@@ -29,7 +29,7 @@ on_rtd = os.environ.get("READTHEDOCS") == 'True'
 use_breathe = tags.has("use_breathe") or on_rtd
 
 if on_rtd:
-    subprocess.call("cd ../doxygen; doxygen Doxyfile.rtd")
+    subprocess.call("echo $PWD; cd ../doxygen; doxygen Doxyfile.rtd")
 
 # If your documentation needs a minimal Sphinx version, state it here.
 #
