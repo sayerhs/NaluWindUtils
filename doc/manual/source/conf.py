@@ -30,7 +30,7 @@ use_breathe = tags.has("use_breathe") or on_rtd
 
 if on_rtd:
     try:
-        subprocess.call("cd ../../doxygen; doxygen Doxyfile.rtd")
+        subprocess.call("cd ../../doxygen")
     except:
         with open("index.rst", 'a') as fh:
             fh.write("\n\n %s\n\n"%os.getcwd())
