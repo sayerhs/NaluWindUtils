@@ -80,6 +80,7 @@ void HITFields::initialize()
     mesh_.add_output_field("velocity");
 }
 
+
 void HITFields::run()
 {
     const std::string timerName = "HITields::run";
@@ -120,18 +121,37 @@ void HITFields::run()
         // Assume the same ordering of mesh nodes as in the HIT file
         //
         // Skip the (x, y, z) entries for this nodes
-        //
-        size_t idx = (nodeID - 1) * 6 + 3;
+        size_t idx = get_index(nodeID) * 6 + 3;
         double* vel = stk::mesh::field_data(*velocity, node);
 
         for (int d=0; d < nDim; d++) {
           vel[d] = mean_vel_[d] + buffer[idx + d];
+          minVel[d] = std::min(vel[d], minVel[d]);
+          maxVel[d] = std::max(vel[d], maxVel[d]);
         }
       }
     }
     for (int d=0; d < nDim; d++)
       std::cout << "    Vel[" << d << "]: min = "
                 << minVel[d] << "; max = " << maxVel[d] << std::endl;
+}
+
+size_t HITFields::get_index(size_t nodeid)
+{
+    const size_t nx = hit_mesh_dims_[0];
+    const size_t ny = hit_mesh_dims_[1];
+    const size_t nz = hit_mesh_dims_[2];
+
+    const size_t nxny = (nx + 1) * (ny + 1);
+    const size_t nx1 = (nx + 1);
+
+    const size_t iz = ((nodeid - 1) / nxny) % nz;
+    nodeid %= nxny;
+
+    const size_t iy = (nodeid / nx1) % ny;
+    const size_t ix = nodeid % nx1 % nx;
+
+    return (iz * (nx * ny) + iy * nx + ix);
 }
 
 }  // nalu

@@ -42,6 +42,8 @@ private:
     HITFields() = delete;
     HITFields(const HITFields&) = delete;
 
+    size_t get_index(size_t);
+
     //! Parse the YAML file and initialize parameters
     void load(const YAML::Node&);
 
