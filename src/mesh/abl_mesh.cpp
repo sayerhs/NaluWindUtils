@@ -22,6 +22,7 @@
 #include "mesh/HexBlockMesh.h"
 #include "core/YamlUtils.h"
 #include "core/PerfUtils.h"
+#include "core/ParallelInfo.h"
 
 #include "stk_util/parallel/Parallel.hpp"
 #include "stk_io/WriteMesh.hpp"
@@ -89,11 +90,15 @@ int main(int argc, char** argv)
 
     blockMesh->run();
 
-    std::cout << "Writing mesh to file: " << output_db << std::endl;
+    const auto& pinfo = sierra::nalu::get_mpi();
+    pinfo.info() << "Writing mesh to file: " << output_db << std::endl;
     bool set_64bit = false;
+    bool set_auto_join = true;
     sierra::nalu::wind_utils::get_optional(node, "ioss_8bit_ints", set_64bit);
+    sierra::nalu::wind_utils::get_optional(node, "auto_join", set_auto_join);
 
     if (set_64bit) mesh->set_64bit_flags();
+    // if (set_auto_join) mesh->set_auto_join();
     auto& stkio = mesh->stkio();
     stkio.set_bulk_data(mesh->bulk());
     mesh->write_database(output_db);
